@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Title</title>
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-iYQeCzEYFbKjA/T2uDLTpkwGzCiq6soy8tYaI1GyVh/UjpbCx/TYkiZhlZB6+fzT" crossorigin="anonymous">
+    </head>
+    <body style="background-color: aqua">
+        <div class="container vh-100">
+            <div class="bg-light h1 mb-0 p-3 text-center mt-3">Дневник путешественника</div>
+            <nav class="bg-secondary py-3 border border-5">
+                <div class="container d-flex flex-nowrap justify-content-between align-items-center">
+                    <div class="w-25 setting">
+                        <div class="input-group">
+                            <span class="text-white d-flex align-items-center">Страна</span>
+                            <select class="form-select ms-2" id="inputGroupSelect01">
+                                <option value="0">Кыргызстан</option>
+                                <option value="1">Казахстан</option>
+                                <option value="2">Украина</option>
+                                <option value="3">Россия</option>
+                                <option value="4">Беларусь</option>
+                                <option value="5">Словения</option>
+                                <option value="6">Словакия</option>
+                                <option value="7">Болгария</option>
+                            </select>
+                        </div>
+                        <div class="input-group mt-3">
+                            <span class="text-white d-flex align-items-center">Цвет</span>
+                            <select class="form-select ms-4" id="inputGroupSelect02">
+                                <option value="0" class="bg-primary text-light">primary</option>
+                                <option value="1" class="bg-success text-light">success</option>
+                                <option value="2" class="bg-danger text-light">danger</option>
+                                <option value="3" class="bg-warning">warning</option>
+                                <option value="4" class="bg-info">info</option>
+                                <option value="5" class="bg-light">light</option>
+                                <option value="6" class="bg-dark text-light">dark</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="ms-3 input-group">
+                        <textarea style="resize: none" class="form-control" placeholder="Ctrl + Enter или кнопка Добавить для отправки"></textarea>
+                        <button type="button" class="btn ms-3 border border-1 bg-light" id="add">Добавить</button>
+                    </div>
+                </div>
+            </nav>
+            <div id="contentWindow" style="max-height: 75%;overflow-y: auto" class="container bg-secondary border border-5 border-top-0 p-3">
+                <div class="container list-group"></div>
+            </div>
+        </div>
+        <script>
+            const windowDaily = document.querySelector('.vh-100');
+            const windowTitle = document.querySelector('.h1');
+            const windowNav = document.querySelector('nav');
+            const windowMain = document.querySelector('#contentWindow');
+            const country = document.querySelector('#inputGroupSelect01');
+            const countrySelect = ['Кыргызстан','Казахстан','Украина','Россия','Беларусь','Словения','Словакия','Болгария'];
+            const color = document.querySelector('#inputGroupSelect02');
+            const textArea = document.querySelector('textarea');
+            const addBtn = document.querySelector('#add');
+            const listGroup = document.querySelector('.list-group');
+
+            //цвет
+            const coloring = (obj) => {
+                return obj.className += ' bg-' + color[color.value].innerText;
+            }
+            const textColoring = (obj) => {
+                coloring(obj);
+                switch (+color.value) {
+                    case 5: return obj.className += ' text-dark';
+                    default: return obj.className += ' text-light';
+                }
+            }
+            //добавление поста
+            textArea.addEventListener('keydown', (e) => {
+                if (e.ctrlKey && e.keyCode === 13) add();
+            })
+            addBtn.addEventListener('click', () => add());
+
+            //добавление
+            const add = () => {
+                // валидация
+                if (!textArea.value.trim()) return;
+
+
+
+                // пост
+                const post = document.createElement('div');
+                post.className = 'list-group-item mb-2 d-flex justify-content-between border border-dark bg-' + color[color.value].innerText;
+                textColoring(post);
+                let postNumbers = listGroup.children.length + 1;
+
+                // контент поста
+                const postContent = document.createElement('div');
+                postContent.className = 'w-100';
+
+                // информация поста
+                const postTop = document.createElement('div');
+                postTop.className = 'd-flex w-100 justify-content-between';
+
+                // нумерация и страна
+                const postCountry = document.createElement('span');
+                postCountry.innerText = countrySelect[country.value];
+                const postNumber = document.createElement('h5');
+                postNumber.innerHTML = 'Пост #' + postNumbers + ' | ' + postCountry.innerText;
+
+                // дата
+                const date = new Date();
+                const postDate = document.createElement('small');
+                postDate.innerHTML = date.getDate() + '.' + (+ date.getMonth() + 1) + '.' + date.getFullYear() + ' | ' +
+                                     date.getHours() + ':' + date.getMinutes();
+                postDate.className = 'h5';
+
+                // hr
+                const postLine = document.createElement('hr');
+                postLine.className = 'my-1';
+
+                // текст
+                const text = document.createElement('p');
+                text.className = 'h5';
+                text.innerText = textArea.value;
+
+                // кнопки взаимодействия с постом
+                const customize = document.createElement('div');
+                customize.className = 'w-auto h-25 ms-4 d-flex'
+
+                // кнопка удаления поста
+                const deleteBtn = document.createElement('button');
+                deleteBtn.className = 'btn btn-danger h-auto w-100 rounded-0 border border-1 border-dark';
+                deleteBtn.innerText = 'Удалить';
+                deleteBtn.addEventListener('click',() => {
+                    const confirmation = confirm('Вы уверены что хотите удалить?');
+                    if (!confirmation){
+                        return;
+                    }
+                    post.remove();
+                })
+
+
+                // +++++++
+                // кнопка изменения поста
+
+
+
+                const editBtn = document.createElement('button');
+                editBtn.className = 'btn btn-warning text-light h-auto w-100 rounded-0 border border-1 border-dark border-start-0';
+                editBtn.innerText = 'Изменить';
+                editBtn.addEventListener('click',() => {
+
+                    // текстовое поле для изменения текста
+                    const editText = document.createElement('textarea');
+                    editText.className = 'form-control';
+                    editText.style.resize = 'none';
+                    editText.placeholder = 'Введите новый текст';
+                    editText.value = text.innerText;
+                    textArea.replaceWith(editText);
+                    editText.focus();
+
+                    // кнопка для изменения текста
+                    const editBtn2 = document.createElement('button');
+                    editBtn2.type = 'button';
+                    editBtn2.className = 'btn btn-warning ms-3 text-light';
+                    editBtn2.innerText = 'Изменить';
+                    addBtn.replaceWith(editBtn2);
+
+                    // кнопка отмены
+                    const noEditBtn = document.createElement('button');
+                    noEditBtn.className = 'btn btn-danger h-auto w-100 rounded-0 border border-1 border-dark border-left-0';
+                    noEditBtn.innerText = 'Отмена';
+                    editBtn.replaceWith(noEditBtn);
+                    noEditBtn.addEventListener('click',() => {
+                        editText.replaceWith(textArea);
+                        editBtn2.replaceWith(addBtn);
+                        noEditBtn.replaceWith(editBtn);
+                    })
+
+                    //способы изменение текста
+                    editText.addEventListener('keydown', (e) => {
+                        if (e.ctrlKey && e.keyCode === 13) edit();
+                    })
+                    editBtn2.addEventListener('click', () => edit());
+
+                    //изменение
+                    const edit = () => {
+                        text.innerText = editText.value;
+                        editText.replaceWith(textArea);
+                        editBtn2.replaceWith(addBtn);
+                        noEditBtn.replaceWith(editBtn);
+                    }
+                })
+
+                // ++++++++
+
+
+
+                //расставляю
+                postTop.append(postNumber,postDate);
+                postContent.append(postTop,postLine,text);
+                customize.append(deleteBtn,editBtn);
+                post.append(postContent,customize);
+                listGroup.prepend(post);
+
+                textArea.value = '';
+            };
+        </script>
+    </body>
+</html>
